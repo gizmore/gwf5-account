@@ -12,7 +12,10 @@ final class Account_Form extends GWF_MethodForm
 	
 	public function execute()
 	{
-		return Module_Account::instance()->renderAccountTabs()->add(parent::execute());
+		$delay = GWF_Time::humanDuration(Module_Account::instance()->cfgChangeTime());
+		return Module_Account::instance()->renderAccountTabs()->add(
+				GDO_Box::make()->content(t('infobox_account_form', [$delay]))->render()->add(
+						parent::execute()));
 	}
 	
 	################
@@ -29,7 +32,7 @@ final class Account_Form extends GWF_MethodForm
 		$form->addField($user->gdoColumn('user_guest_name')->writable(false));
 		else :
 		$form->addField($user->gdoColumn('user_name')->writable(false));
-		$form->addField($user->gdoColumn('user_real_name'));
+		$form->addField($user->gdoColumn('user_real_name')->writable(!$user->getRealName()));
 		endif;
 		
 		# Section2
@@ -83,6 +86,18 @@ final class Account_Form extends GWF_MethodForm
 			$back .= $this->changeFlag($form, $user, 'user_allow_email');
 		}
 		
+		# Real Name
+		if ( (!$guest) && ($m->cfgAllowRealName()) )
+		{
+			if ($realname = $form->getVar('user_real_name'))
+			{
+				$user->setVar('user_real_name', $realname);
+				$back .= t('msg_real_name_now', [$realname]);
+			}
+			
+		}
+		
+		
 		# Email Format
 		if ( (!$guest) && $m->cfgAllowEmailFormatChange() )
 		{
@@ -123,9 +138,6 @@ final class Account_Form extends GWF_MethodForm
 		$oldbirthdate = $user->getVar('user_birthdate');
 		$newbirthdate = $m->cfgAllowBirthdayChange() ? $form->getVar('user_birthdate') : $oldbirthdate;
 		if ($oldbirthdate != $newbirthdate) { $demo_changed = true; }
-		$oldname = $user->getRealName();
-		$newname = $guest ? $oldname : $form->getVar('user_real_name');
-		if ($oldname!= $newname) { $demo_changed = true; }
 		
 		if ($demo_changed)
 		{
@@ -146,12 +158,13 @@ final class Account_Form extends GWF_MethodForm
 					'user_language' => $newlid,
 					'user_gender' => $newgender,
 					'user_birthdate' => $newbirthdate,
-					'user_real_name' => $newname,
 				);
 				require_once 'ChangeDemo.php';
 				$back .= Account_ChangeDemo::requestChange($this->module, $user, $data);
 			}
 		}
+		
+		$user->save();
 		
 		return GWF_Response::make($back)->add($this->renderPage());
 	}

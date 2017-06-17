@@ -5,6 +5,8 @@
  */
 final class GWF_AccountDelete extends GDO
 {
+	public static $CACHED = false;
+	
 	###########
 	### GDO ###
 	###########

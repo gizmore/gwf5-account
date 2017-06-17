@@ -24,6 +24,7 @@ final class Module_Account extends GWF_Module
 		return array(
 			GDO_Int::make('adult_age')->unsigned()->min(12)->max(40)->initial('21'),
 			GDO_Duration::make('account_changetime')->min(0)->initial(GWF_Time::ONE_MONTH * 3),
+			GDO_Checkbox::make('allow_real_name')->initial('0'),
 			GDO_Checkbox::make('allow_guest_settings')->initial('1'),
 			GDO_Checkbox::make('allow_country_change')->initial('1'),
 			GDO_Checkbox::make('allow_lang_change')->initial('1'),
@@ -57,7 +58,8 @@ final class Module_Account extends GWF_Module
 	public function cfgAdultAge() { return $this->getConfigValue('adult_age'); }
 	public function cfgChangeTime() { return $this->getConfigValue('account_changetime'); }
 	public function cfgAllowGuests() { return $this->getConfigValue('allow_guest_settings'); }
-
+	public function cfgAllowRealName() { return $this->getConfigValue('allow_real_name'); }
+	
 	public function cfgAllowCountryChange() { return $this->getConfigValue('allow_country_change'); }
 	public function cfgAllowLanguageChange() { return $this->getConfigValue('allow_lang_change'); }
 	public function cfgAllowBirthdayChange() { return $this->getConfigValue('allow_birthday_change'); }

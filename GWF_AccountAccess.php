@@ -12,12 +12,15 @@
  */
 final class GWF_AccountAccess extends GDO
 {
+	public static $CACHED = false;
+	
 	###########
 	### GDO ###
 	###########
 	public function gdoColumns()
 	{
 		return array(
+			GDO_AutoInc::make('accacc_id'),
 			GDO_User::make('accacc_uid')->index(),
 			GDO_MD5::make('accacc_ua')->notNull(),
 			GDO_IP::make('accacc_ip')->notNull(),

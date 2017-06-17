@@ -11,6 +11,8 @@
  */
 final class GWF_AccountChange extends GDO
 {
+	public static $CACHED = false;
+	
 	###########
 	### GDO ###
 	###########

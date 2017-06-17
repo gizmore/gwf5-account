@@ -73,18 +73,21 @@ final class GWF_AccountAccess extends GDO
 			}
 		}
 		
-		# New access insert
-		self::blank(array(
-			'accacc_uid' => $user->getID(),
-			'accacc_ua' => $ua,
-			'accacc_ip' => $ip,
-			'accacc_isp' => $isp,
-		))->insert();
+		if ($setting->recordIPs())
+		{
+			# New access insert
+			self::blank(array(
+				'accacc_uid' => $user->getID(),
+				'accacc_ua' => $ua,
+				'accacc_ip' => $ip,
+				'accacc_isp' => $isp,
+			))->insert();
+		}
 	}
 	
 	private static function isphash()
 	{
-		if ($_SERVER['REMOTE_ADDR'] === ($isp = @gethostbyaddr($_SERVER['REMOTE_ADDR'])))
+		if (GDO_IP::current() === ($isp = @gethostbyaddr($_SERVER['REMOTE_ADDR'])))
 		{
 			$isp = null;
 		}

@@ -14,8 +14,8 @@ final class Account_Delete extends GWF_MethodForm
 	{
 		if (isset($_POST['prune']))
 		{
-			$this->prune = true;
-			$_POST['submit'] = true;
+			$this->prune = true; # remember to prune
+			$_REQUEST['submit'] = true; # Mimic normal POST
 		}
 		return Module_Account::instance()->renderAccountTabs()->add(parent::execute());
 	}

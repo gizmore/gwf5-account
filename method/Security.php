@@ -46,8 +46,9 @@ final class Account_Security extends GWF_MethodForm
 			GDO_Submit::make(),
 			GDO_AntiCSRF::make(),
 		));
+		$form->withGDOValuesFrom($this->settings);
 	}
-	
+
 	/**
 	 * On successful validation, save the new toggles.
 	 * In case we turned IP recording off, send an error mail.
@@ -57,7 +58,7 @@ final class Account_Security extends GWF_MethodForm
 	public function formValidated(GWF_Form $form)
 	{
 		$beforeEnabeld = $this->settings->recordIPs();
-		$this->settings->saveVars($form->values());
+		$this->settings->setVars($form->values())->replace();
 		if ( ($beforeEnabeld) && (!$this->settings->recordIPs()) )
 		{
 			GWF_AccountAccess::sendAlertMail($this->module, $this->user, 'record_disabled');

@@ -24,7 +24,7 @@ final class Module_Account extends GWF_Module
 		return array(
 			GDO_Int::make('adult_age')->unsigned()->min(12)->max(40)->initial('21'),
 			GDO_Duration::make('account_changetime')->min(0)->initial(GWF_Time::ONE_MONTH * 3),
-			GDO_Checkbox::make('allow_real_name')->initial('0'),
+			GDO_Checkbox::make('allow_real_name')->initial('1'),
 			GDO_Checkbox::make('allow_guest_settings')->initial('1'),
 			GDO_Checkbox::make('allow_country_change')->initial('1'),
 			GDO_Checkbox::make('allow_lang_change')->initial('1'),
@@ -88,7 +88,7 @@ final class Module_Account extends GWF_Module
 			$user = GWF_User::current();
 			if ( ($user->isMember()) || ($user->isGuest() && $this->cfgAllowGuests()) )
 			{
-				$navbar->addField(GDO_Button::make('btn_account')->href($this->getMethodHREF('Form')));
+				$navbar->addField(GDO_Link::make('btn_account')->href($this->getMethodHREF('Form')));
 			}
 		}
 	}

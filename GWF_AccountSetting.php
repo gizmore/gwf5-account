@@ -10,6 +10,8 @@
  */
 class GWF_AccountSetting extends GDO
 {
+	public function gdoCached() { return false; }
+	
 	public function gdoColumns()
 	{
 		return array(

@@ -64,20 +64,19 @@ final class Account_ChangeDemo extends GWF_Method
 		$username = $user->displayName();
 		$sitename = GWF5::instance()->getSiteName();
 		$timeout = GWF_Time::humanDuration($module->cfgChangeTime());
-		$realname = htmlspecialchars($data['user_real_name']);
-		$gender = GDO_Gender::displayS($data['user_gender']);
+		$gender = t('enum_'.$data['user_gender']);
 		$country = GWF_Country::getByISOOrUnknown($data['user_country'])->displayName();
 		$language = GWF_Language::getByISOOrUnknown($data['user_language'])->displayName();
 		$birthdate = $data['user_birthdate'] > 0 ? GWF_Time::displayDate($data['user_birthdate'], 'day') : GWF_HTML::lang('unknown');
 		$link = GWF_HTML::anchor(url('Account', 'ChangeDemo', sprintf("&userid=%d&token=%s", $user->getID(), $ac->getToken())));
 
-		$args = [$username, $sitename, $timeout, $realname, $country, $language, $gender, $birthdate, $link];
+		$args = [$username, $sitename, $timeout, $country, $language, $gender, $birthdate, $link];
 
 		$mail = new GWF_Mail();
 		$mail->setSender(GWF_BOT_EMAIL);
 		$mail->setSenderName(GWF_BOT_NAME);
-		$mail->setSubject(t('mail_subj_mailchange', [$sitename]));
-		$mail->setBody(t('mail_body_mailchange', $args));
+		$mail->setSubject(t('mail_subj_demochange', [$sitename]));
+		$mail->setBody(t('mail_body_demochange', $args));
 		$mail->sendToUser($user);
 		return t('msg_mail_sent');
 	}

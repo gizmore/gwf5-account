@@ -11,7 +11,7 @@
  */
 final class GWF_AccountChange extends GDO
 {
-	public static $CACHED = false;
+	public function gdoCached() { return false; }
 	
 	###########
 	### GDO ###
@@ -20,7 +20,7 @@ final class GWF_AccountChange extends GDO
 	{
 		return array(
 			GDO_User::make('accchg_user')->primary(),
-			GDO_Enum::make('accchg_type')->enumValues('email','demo', 'demo_lock')->primary(),
+			GDO_Enum::make('accchg_type')->enumValues('email', 'email2', 'demo', 'demo_lock')->primary(),
 			GDO_Token::make('accchg_token')->notNull(),
 			GDO_Serialize::make('accchg_data'),
 			GDO_CreatedAt::make('accchg_time'),
@@ -30,10 +30,14 @@ final class GWF_AccountChange extends GDO
 	##############
 	### Getter ###
 	##############
+	/**
+	 * @return GWF_User
+	 */
 	public function getUser() { return $this->getValue('accchg_user'); }
 	public function getUserID() { return $this->getVar('accchg_user'); }
 	public function getTimestamp() { return $this->getVar('accchg_time'); }
 	public function getToken() { return $this->getVar('accchg_token'); }
+	public function getData() { return $this->getValue('accchg_data'); }
 	
 	##############
 	### Static ###

@@ -56,11 +56,12 @@ final class Account_Security extends GWF_MethodForm
 	 */
 	public function formValidated(GWF_Form $form)
 	{
-		$beforeEnabeld = $this->setting->recordIPs();
+		$beforeEnabeld = $this->settings->recordIPs();
 		$this->settings->saveVars($form->values());
-		if ( ($beforeEnabeld) && (!$this->setting->recordIPs()) )
+		if ( ($beforeEnabeld) && (!$this->settings->recordIPs()) )
 		{
 			GWF_AccountAccess::sendAlertMail($this->module, $this->user, 'record_disabled');
 		}
+		return parent::formValidated($form);
 	}
 }

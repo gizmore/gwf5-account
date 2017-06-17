@@ -8,8 +8,15 @@ final class Account_Delete extends GWF_MethodForm
 	public function getUserType() { return GWF_User::MEMBER; }
 	public function isEnabled() { return Module_Account::instance()->cfgFeatureDeletion(); }
 	
+	private $prune = false;
+	
 	public function execute()
 	{
+		if (isset($_POST['prune']))
+		{
+			$this->prune = true;
+			$_POST['submit'] = true;
+		}
 		return Module_Account::instance()->renderAccountTabs()->add(parent::execute());
 	}
 	
@@ -18,7 +25,8 @@ final class Account_Delete extends GWF_MethodForm
 		$fields = array(
 			GDO_Box::make('info')->content(t('box_info_deletion')),
 			GDO_Message::make('accrm_note'),
-			GDO_Submit::make(),
+			GDO_Submit::make()->label('btn_delete_account'),
+			GDO_Submit::make('prune')->label('btn_prune_account'),
 			GDO_AntiCSRF::make(),
 		);
 		$form->addFields($fields);
@@ -41,21 +49,37 @@ final class Account_Delete extends GWF_MethodForm
 		$user->saveValue('user_deleted_at', time());
 		GWF_Hook::call('UserQuit', [$user]);
 		
-		# Report and logout
-		return $this->module->message('msg_account_marked_deleted')->add(method('Login', 'Logout')->execute());
+		if ($this->prune)
+		{
+			$user->delete();
+			# Report and logout
+			return $this->message('msg_account_pruned')->add(method('Login', 'Logout')->execute());
+		}
+		else
+		{
+			# Report and logout
+			return $this->message('msg_account_marked_deleted')->add(method('Login', 'Logout')->execute());
+		}
 	}
 	
 	private function onSendEmail(GWF_User $user, $note)
 	{
 		foreach (GWF_User::admins() as $admin)
 		{
+			$sitename = $this->getSiteName();
+			$adminame = $admin->displayName();
+			$username = $user->displayName();
+			$operation = $this->prune ? tusr($admin, 'btn_prune_account') : tusr($admin, 'btn_delete_account');
+			$note = htmlspecialchars($note);
+			$args = [$adminame, $username, $operation, $note, $sitename];
+			
 			$mail = new GWF_Mail();
 			$mail->setSender(GWF_BOT_EMAIL);
 			$mail->setSenderName(GWF_BOT_NAME);
-			$mail->setSubject(tusr($admin, 'mail_subj_account_deleted', [$this->getSiteName(), $user->displayName()]));
-			$mail->setBody(tusr($admin, 'mail_body_account_deleted', array($user->displayUsername(), htmlspecialchars($note))));
+			$mail->setSubject(tusr($admin, 'mail_subj_account_deleted', [$sitename, $username]));
+			$mail->setBody(tusr($admin, 'mail_body_account_deleted', $args));
 			$mail->sendToUser($admin);
 		}
 	}
-	
 }
+

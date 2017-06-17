@@ -12,7 +12,7 @@
  */
 final class GWF_AccountAccess extends GDO
 {
-	public static $CACHED = false;
+	public function gdoCached() { return false; }
 	
 	###########
 	### GDO ###

@@ -1,9 +1,11 @@
 <?php
 /**
- * Method only is triggered by Form.
+ * Method only is triggered by Form (Step 0).
  * Consists of two mail sending, old and new.
  * 
  * @author gizmore
+ * 
+ * @see Account_Form
  *
  */
 final class Account_ChangeEmail extends GWF_Method
@@ -13,23 +15,29 @@ final class Account_ChangeEmail extends GWF_Method
 	
 	public function execute()
 	{
-		if (Common::getPostString('changemail'))
+		if (Common::getPostString('btn_changemail'))
 		{
+			# Step 2 - Form for mail 2
 			return $this->onRequestB();
 		}
-		if ($token = Common::getGetString('token'))
+		elseif ($token = Common::getGetString('token'))
 		{
+			# Step 1 - from first mail
 			return $this->onChangeA($token);
 		}
-		if ($token = Common::getGet('change'))
+		elseif ($token = Common::getGet('change'))
 		{
+			# Step 3 - from second mail
 			return $this->onChangeB($token);
 		}
 	}
 	
+	#######################
+	### Entry from Form ###
+	#######################
 	public static function changeEmail(Module_Account $module, GWF_User $user, $newMail)
 	{
-		if ($module->cfgUseEmail() && $user->getMail())
+		if ($module->cfgDemoMail() && $user->getMail())
 		{
 			return self::sendEmail($module, $user, $newMail);
 		}
@@ -38,17 +46,22 @@ final class Account_ChangeEmail extends GWF_Method
 			return self::sendEmailB($module, $user->getID(), $newMail);
 		}
 	}
-	
+
+	##############
+	### Step 0 ###
+	##############
 	private static function sendEmail(Module_Account $module, GWF_User $user, $newMail)
 	{
+		$sitename = GWF5::instance()->getSiteName();
+		
 		$mail = new GWF_Mail();
 		$mail->setReceiver($user->getMail());
 		$mail->setSender(GWF_BOT_EMAIL);
 		$mail->setSenderName(GWF_BOT_NAME);
-		$mail->setSubject(t('mail_subj_chmail_a', [$this->getSiteName()]));
-		$newmail = trim(Common::getPost('email'));
+		$mail->setSubject(t('mail_subj_chmail_a', [$sitename]));
+		$newmail = trim(htmlspecialchars($newMail));
 		$link = self::createLink($module, $user, $newMail);
-		$mail->setBody(t('mail_body_chmail_a', [$user->displayName(), $this->getSiteName(), $link]));
+		$mail->setBody(t('mail_body_chmail_a', [$user->displayName(), $sitename, $newmail, $link]));
 		$mail->sendToUser($user);
 	}
 	
@@ -60,11 +73,14 @@ final class Account_ChangeEmail extends GWF_Method
 		return GWF_HTML::anchor(url('Account', 'ChangeEmail', "&userid=$userid&token=$token"));
 	}
 	
+	##############
+	### Step 1 ###
+	##############
 	private function onChangeA($token)
 	{
-		if (!($row = GWF_AccountChange::getRow($userid, 'email', $token)))
+		if (!($row = GWF_AccountChange::getRow(Common::getGetString('userid'), 'email', $token)))
 		{
-			return $this->error('err_token_chmaila');
+			return $this->error('err_token');
 		}
 		return $this->templateChangeMailB($row);
 	}
@@ -74,130 +90,94 @@ final class Account_ChangeEmail extends GWF_Method
 		$form = new GWF_Form();
 		$form->title('ft_change_mail', [$this->getSiteName()]);
 		$form->addFields(array(
-			GDO_Email::make('email')->required(),
-			GDO_Email::make('email_re')->required()->label('retype'),
-			GDO_Hidden::make('token')->value($ac->getToken()),
-			GDO_Hidden::make('userid')->value($ac->getUserID()),
-			GDO_Submit::make(),
+			GDO_Email::make('email')->required()->validator([$this, 'validateEmailUnique']),
+			GDO_Email::make('email_re')->required()->label('retype')->validator([$this, 'validateEmailRetype']),
 			GDO_AntiCSRF::make(),
+			GDO_Submit::make('btn_changemail'),
 		));
-		$data = array(
-			'email' => array(GWF_Form::STRING, '', $this->module->lang('th_email_new')),
-			'email_re' => array(GWF_Form::STRING, '', $this->module->lang('th_email_re')),
-			'changemail' => array(GWF_Form::SUBMIT, $this->module->lang('btn_changemail')),
-			'token' => array(GWF_Form::HIDDEN, $ac->getVar('token')),
-			'' => array(GWF_Form::HIDDEN, $ac->getVar('userid')),
-		);
-		return new GWF_Form('GWF_User', $data);	
+		return $form;
+	}
+	
+	public function validateEmailRetype(GWF_Form $form, GDOType $gdoType)
+	{
+		$new1 = $form->getField('email')->formValue();
+		$new2 = $form->getField('email_re')->formValue();
+		return $new1 === $new2 ? true : $gdoType->error('err_email_retype');
+	}
+
+	public function validateEmailUnique(GWF_Form $form, GDOType $gdoType)
+	{
+		$count = GWF_User::table()->countWhere("user_email={$gdoType->quotedValue()}");
+		return $count > 0 ? $gdoType->error('err_email_taken') : true;
 	}
 	
 	private function templateChangeMailB(GWF_AccountChange $ac)
 	{
 		$form = $this->getChangeMailForm($ac);
-		
-		$tVars = array(
-			'form' => $form->templateY($this->module->lang('chmail_title')),
-		);
-		return $this->module->template('changemail.tpl', $tVars);
+		return $form->render();
 	}
 	
+	##############
+	### Step 2 ###
+	##############
 	private function onRequestB()
 	{
-		$token = Common::getPost('token');
-		$userid = (int) Common::getPost('userid');
-		if (false === ($row = GWF_AccountChange::checkToken($userid, $token, 'email'))) {
-			return $this->module->error('err_token');
+		$token = Common::getGetString('token');
+		$userid = Common::getGetString('userid');
+		if (!($row = GWF_AccountChange::getRow($userid, 'email', $token)))
+		{
+			return $this->error('err_token');
 		}
-		
-		$email1 = Common::getPost('email');
-		$email2 = Common::getPost('email_re');
-		if (!GWF_Validator::isValidEmail($email1)) {
-			return $this->module->error('err_email_invalid').$this->templateChangeMailB($row);
+		$form = $this->getChangeMailForm($row);
+		if (!$form->validate())
+		{
+			return $this->error('err_form_invalid')->add($form->render());
 		}
-		
-		if ($email1 !== $email2) {
-			return $this->module->error('err_email_retype').$this->templateChangeMailB($row);
-		}
-		
-		if (GWF_User::getByEmail($email1) !== false) {
-			return $this->module->error('err_email_taken');
-		}
-		
-		if (false === $row->delete()) {
-			return GWF_HTML::err('ERR_DATABASE', array( __FILE__, __LINE__));
-		}
-		
-		return self::sendEmailB($this->module, $userid, $email1);
+		$row->delete();
+		return self::sendEmailB($this->module, $userid, trim($_POST['form']['email']));
 	}
 	
 	private static function sendEmailB(Module_Account $module, $userid, $email)
 	{
-		$token = GWF_AccountChange::createToken($userid, 'email2', $email);
+		$user = GWF_User::table()->find($userid);
+		$token = GWF_AccountChange::addRow($userid, 'email2', $email);
+
+		# Args
+		$username = $user->displayName();
+		$sitename = GWF5::instance()->getSiteName();
+		$email = htmlspecialchars($email);
+		$link = GWF_HTML::anchor(url('Account', 'ChangeEmail', "&userid={$user->getID()}&change={$token->getToken()}"));
 		
+		# Mail
 		$mail = new GWF_Mail();
-		$mail->setSender($module->cfgMailSender());
+		$mail->setSender(GWF_BOT_EMAIL);
+		$mail->setSenderName(GWF_BOT_NAME);
 		$mail->setReceiver($email);
-		$mail->setSubject($module->lang('chmailb_subj'));
+		$mail->setSubject(t('mail_subj_chmail_b', [$sitename]));
+		$mail->setBody(t('mail_body_chmail_b', [$username, $sitename, $email, $link]));
+		$mail->sendAsHTML();
 		
-		if (false === ($user = GWF_User::getByID($userid))) {
-			return GWF_HTML::err('ERR_UNKNOWN_USER');
-		}
-		
-		$link = self::getLinkB($token, $userid);
-		$body = $module->lang('chmailb_body', array( $user->display('user_name'), $link));
-		$mail->setBody($body);
-
-		if (!$mail->sendToUser($user)) {
-			return GWF_HTML::err('ERR_MAIL_SENT');
-		}
-		
-		return $module->message('msg_mail_sent', array(htmlspecialchars($email)));
-	}
-	
-	private static function getLinkB($token, $userid)
-	{
-		$url = Common::getAbsoluteURL(sprintf('index.php?mo=Account&me=ChangeEmail&userid=%s&change=%s', $userid, $token));
-		return sprintf('<a href="%s">%s</a>', $url, $url);
+		return $module->message('msg_mail_sent');
 	}
 
+	##############
+	### Step 3 ###
+	##############
 	private function onChangeB($token)
 	{
-		$userid = (int) Common::getGet('userid');
-		if (false === ($ac = GWF_AccountChange::checkToken($userid, $token, 'email2')))
+		if (!($ac = GWF_AccountChange::getRow(Common::getGetString('userid'), 'email2', $token)))
 		{
-			return $this->module->error('err_token');
+			return $this->error('err_token');
+		}
+		if (!$user = $ac->getUser())
+		{
+			return $this->error('err_user');
 		}
 		
-		if (false === ($user = $ac->getUser()))
-		{
-			return GWF_HTML::err('ERR_UNKNOWN_USER');
-		}
+		$user->saveVar('user_email', $ac->getData());
 		
-		if (false === $ac->delete())
-		{
-			return GWF_HTML::err('ERR_DATABASE', array( __FILE__, __LINE__));
-		}
+		$ac->delete();
 		
-		$oldmail = $user->getValidMail();
-		$newmail = $ac->getVar('data');
-		
-		if (false === GWF_Hook::call(GWF_Hook::CHANGE_MAIL, $user, array($oldmail, $newmail)))
-		{
-			return GWF_HTML::err('ERR_DATABASE', array( __FILE__, __LINE__));
-		}
-		
-		if (false === $user->saveVar('user_email', $newmail))
-		{
-			return GWF_HTML::err('ERR_DATABASE', array( __FILE__, __LINE__));
-		}
-		
-		if (false === $user->saveOption(GWF_User::MAIL_APPROVED, true))
-		{
-			return GWF_HTML::err('ERR_DATABASE', array( __FILE__, __LINE__));
-		}
-		
-		return $this->module->message('msg_mail_changed', array(htmlspecialchars($newmail)));
+		return $this->message('msg_mail_changed', [$user->getMail()]);
 	}
 }
-
-?>

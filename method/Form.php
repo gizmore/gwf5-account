@@ -94,9 +94,7 @@ final class Account_Form extends GWF_MethodForm
 				$user->setVar('user_real_name', $realname);
 				$back .= t('msg_real_name_now', [$realname]);
 			}
-			
 		}
-		
 		
 		# Email Format
 		if ( (!$guest) && $m->cfgAllowEmailFormatChange() )
@@ -117,7 +115,7 @@ final class Account_Form extends GWF_MethodForm
 			$newmail = $form->getVar('user_email');
 			if ($newmail !== $oldmail)
 			{
-				require_once 'ChangeEmail.php';
+				include 'ChangeEmail.php';
 				$back .= Account_ChangeEmail::changeEmail($this->module, $user, $newmail);
 			}
 		}
@@ -166,7 +164,7 @@ final class Account_Form extends GWF_MethodForm
 		
 		$user->save();
 		
-		return GWF_Response::make($back)->add($this->renderPage());
+		return GWF_Message::make($back)->add($this->renderPage());
 	}
 	
 	private function changeFlag(GWF_Form $form, GWF_User $user, $flagname)

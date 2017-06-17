@@ -73,6 +73,11 @@ final class Account_Form extends GWF_MethodForm
 		{
 			$back .= $this->changeFlag($form, $user, 'user_want_adult');
 		}
+		else
+		{
+			$form->getField('user_want_adult')->value('0');
+		}
+		
 		if ($m->cfgAllowOnlineVisibleChange())
 		{
 			$back .= $this->changeFlag($form, $user, 'user_hide_online');
@@ -162,9 +167,12 @@ final class Account_Form extends GWF_MethodForm
 			}
 		}
 		
-		$user->save();
+		if ($back)
+		{
+			$user->save();
+		}
 		
-		return GWF_Message::make($back)->add($this->renderPage());
+		return $back ? GWF_Message::make($back)->add($this->renderPage()) : $this->renderPage();
 	}
 	
 	private function changeFlag(GWF_Form $form, GWF_User $user, $flagname)

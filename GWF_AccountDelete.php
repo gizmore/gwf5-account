@@ -13,7 +13,7 @@ final class GWF_AccountDelete extends GDO
 	public function gdoColumns()
 	{
 		return array(
-			GDO_User::make('accrm_uid')->primary(),
+			GDO_User::make('accrm_uid')->primary()->cascadeNull(),
 			GDO_Message::make('accrm_note')->notNull(),
 		);
 	}

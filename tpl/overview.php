@@ -2,7 +2,7 @@
 $module = Module_Account::instance();
 
 # Create a horizontal navbar.
-$bar = GWF_Navbar::create(10, 'row');
+$bar = GDO_Bar::make();
 
 # Add buttons to bar
 $bar->addField(GDO_Link::make('link_account_form')->href(href('Account', 'Form'))->icon('account_box'));
@@ -19,4 +19,4 @@ if ($module->cfgFeatureDeletion()) :
 endif;
 
 # Render
-echo $bar->render();
+echo $bar->renderCell();

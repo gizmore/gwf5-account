@@ -7,6 +7,9 @@ return array(
 'link_account_access' => 'Logs',
 'link_account_delete' => 'Delete',
 ##########################################################
+'ft_account_settings' => '[%s] %s Settings',
+'msg_settings_saved' => 'Your settings for the %s module have been saved.<br/>%s',
+##########################################################
 'ft_account_form' => '[%s] Account',
 'infobox_account_form' => 'Please note that you cannot change your "Realname" after it has been set.<br/>Your demographic options can be set once every %s.',
 'section_login' => 'Login Settings',

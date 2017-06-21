@@ -47,7 +47,7 @@ final class Account_Form extends GWF_MethodForm
 		if ($m->cfgAllowGenderChange()) $form->addField($user->gdoColumn('user_gender'));
 		if ($m->cfgAllowBirthdayChange()) $form->addField($user->gdoColumn('user_birthdate'));
 
-		$form->addField(GDO_Divider::make('div4')->label('section_options'));
+// 		$form->addField(GDO_Divider::make('div4')->label('section_options'));
 // 		if ($m->cfgAllowOnlineVisibleChange()) $form->addField($user->gdoColumn('user_hide_online'));
 // 		if ($m->cfgAllowAdultOptionsChange()) $form->addField($user->gdoColumn('user_want_adult'));
 // 		if ($m->cfgAllowBirthdayOptionsChange()) $form->addField($user->gdoColumn('user_show_birthdays'));

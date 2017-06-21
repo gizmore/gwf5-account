@@ -37,7 +37,7 @@ class GWF_AccountSetting extends GDO
 	 */
 	public static function forUser(GWF_User $user)
 	{
-		if (!($setting = self::getById($user->getID())))
+		if (!($setting = self::table()->find($user->getID(), false)))
 		{
 			$setting = self::blank(['accset_user' => $user->getID()]);
 		}

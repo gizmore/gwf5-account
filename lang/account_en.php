@@ -31,6 +31,7 @@ return array(
 'msg_gpg_key_added' => 'Your GPG key has been imported and encryption of your E-Mails is enabled.',
 ##########################################################
 'ft_account_security' => '[%s] Security Options',
+'box_account_security' => 'You have to enable IP recording to get alerts.',
 'accset_record_ip' => 'Record successful login IPs',
 'accset_uawatch' => 'Alert on UserAgent change',
 'accset_ipwatch' => 'Alert on IP change',
@@ -108,6 +109,28 @@ If the information is correct, you can accept these settings by visiting this li
 Otherwise, please ignore this E-Mail and try again anytime.
 
 Kind Regards
-The %2$s Team
-',
+The %2$s Team',
+##########################################################
+'mail_subj_account_alert' => '[%s] Access Alert',
+'mail_body_account_alert' => '
+Hello %s,
+
+There has been access to your %s account with an unusual configuration.
+
+UserAgent: %s
+IP Address: %s
+Hostname/ISP: %s
+
+You can check your access history here.
+
+%s
+
+You can toggle your access alerts here.
+
+%s
+
+Kind Regards,
+The %2$s Team',
+##########################################################
+		
 );

@@ -32,10 +32,10 @@ final class Module_Account extends GWF_Module
 			GDO_Checkbox::make('allow_gender_change')->initial('1'),
 			GDO_Checkbox::make('allow_email_change')->initial('1'),
 			GDO_Checkbox::make('allow_email_fmt_change')->initial('1'),
-			GDO_Checkbox::make('allow_email_show_change')->initial('1'),
-			GDO_Checkbox::make('allow_online_show_change')->initial('1'),
-			GDO_Checkbox::make('allow_adult_show_change')->initial('1'),
-			GDO_Checkbox::make('allow_birthday_show_change')->initial('1'),
+// 			GDO_Checkbox::make('allow_email_show_change')->initial('1'),
+// 			GDO_Checkbox::make('allow_online_show_change')->initial('1'),
+// 			GDO_Checkbox::make('allow_adult_show_change')->initial('1'),
+// 			GDO_Checkbox::make('allow_birthday_show_change')->initial('1'),
 			GDO_Checkbox::make('feature_access_history')->initial('1'),
 			GDO_Checkbox::make('feature_account_deletion')->initial('1'),
 			GDO_Checkbox::make('feature_gpg_engine')->initial('1'),
@@ -48,6 +48,7 @@ final class Module_Account extends GWF_Module
 	#############
 	public function hookUserAuthenticated(array $args=null)
 	{
+// 		$this->initModule();
 		GWF_AccountAccess::onAccess($this, $args[0]);
 	}
 
@@ -66,10 +67,10 @@ final class Module_Account extends GWF_Module
 	public function cfgAllowGenderChange() { return $this->getConfigValue('allow_gender_change'); }
 	public function cfgAllowEmailChange() { return $this->getConfigValue('allow_email_change'); }
 	public function cfgAllowEmailFormatChange() { return $this->getConfigValue('allow_email_fmt_change'); }
-	public function cfgAllowEmailVisibleChange() { return $this->getConfigValue('allow_email_show_change'); }
-	public function cfgAllowOnlineVisibleChange() { return $this->getConfigValue('allow_online_show_change'); }
-	public function cfgAllowAdultOptionsChange() { return $this->getConfigValue('allow_adult_show_change'); }
-	public function cfgAllowBirthdayOptionsChange() { return $this->getConfigValue('allow_birthday_show_change'); }
+// 	public function cfgAllowEmailVisibleChange() { return $this->getConfigValue('allow_email_show_change'); }
+// 	public function cfgAllowOnlineVisibleChange() { return $this->getConfigValue('allow_online_show_change'); }
+// 	public function cfgAllowAdultOptionsChange() { return $this->getConfigValue('allow_adult_show_change'); }
+// 	public function cfgAllowBirthdayOptionsChange() { return $this->getConfigValue('allow_birthday_show_change'); }
 	
 	public function cfgFeatureAccess() { return $this->getConfigValue('feature_access_history'); }
 	public function cfgFeatureDeletion() { return $this->getConfigValue('feature_account_deletion'); }

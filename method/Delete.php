@@ -23,7 +23,7 @@ final class Account_Delete extends GWF_MethodForm
 	public function createForm(GWF_Form $form)
 	{
 		$fields = array(
-			GDO_Box::make('info')->content(t('box_info_deletion')),
+			GDO_Box::make('info')->content(t('box_info_deletion', [$this->getSiteName()])),
 			GDO_Message::make('accrm_note'),
 			GDO_Submit::make()->label('btn_delete_account'),
 			GDO_Submit::make('prune')->label('btn_prune_account'),

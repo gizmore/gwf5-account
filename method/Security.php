@@ -41,6 +41,7 @@ final class Account_Security extends GWF_MethodForm
 	 */
 	public function createForm(GWF_Form $form)
 	{
+		$form->addField(GDO_Box::make('info')->content(t('box_account_security')));
 		$form->addFields($this->settings->getGDOColumns(['accset_record_ip', 'accset_uawatch', 'accset_ipwatch', 'accset_ispwatch']));
 		$form->addFields(array(
 			GDO_Submit::make(),

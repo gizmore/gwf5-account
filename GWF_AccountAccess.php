@@ -67,9 +67,12 @@ final class GWF_AccountAccess extends GDO
 		# Query alert
 		if (!empty($query))
 		{
-			if (!self::table()->select('1')->where("accacc_uid={$user->getID()} $query")->exec()->fetchValue())
+			if (0 != self::table()->select('COUNT(*)')->where("accacc_uid={$user->getID()}")->exec()->fetchValue())
 			{
-				self::sendAlertMail($module, $user);
+				if (!self::table()->select('1')->where("accacc_uid={$user->getID()} $query")->exec()->fetchValue())
+				{
+					self::sendAlertMail($module, $user);
+				}
 			}
 		}
 		
@@ -101,7 +104,7 @@ final class GWF_AccountAccess extends GDO
 	
 	private static function hash_check($field, $hash, $quote='"')
 	{
-		return $hash === null ? $field.' IS NULL' : $field.'='.$quote.GDO::escape($hash).$quote;
+		return $hash === null ? $field.' IS NULL' : $field.'='.quote($hash);
 	}
 	
 	private static function hash($value)
@@ -124,8 +127,8 @@ final class GWF_AccountAccess extends GDO
 				GWF_HTML::escape($_SERVER['HTTP_USER_AGENT']),
 				$_SERVER['REMOTE_ADDR'],
 				gethostbyaddr($_SERVER['REMOTE_ADDR']),
-				GWF_HTML::anchor(url('Account', 'Access'), t('link_manage_access_recording')),
-				t('mail_signature')
+				GWF_HTML::anchor(url('Account', 'Access')),
+				GWF_HTML::anchor(url('Account', 'Form')),
 			)));
 			$mail->sendToUser($user);
 		}

@@ -67,7 +67,7 @@ final class Account_ChangeDemo extends GWF_Method
 		$gender = t('enum_'.$data['user_gender']);
 		$country = GWF_Country::getByISOOrUnknown($data['user_country'])->displayName();
 		$language = GWF_Language::getByISOOrUnknown($data['user_language'])->displayName();
-		$birthdate = $data['user_birthdate'] > 0 ? GWF_Time::displayDate($data['user_birthdate'], 'day') : GWF_HTML::lang('unknown');
+		$birthdate = $data['user_birthdate'] > 0 ? GWF_Time::displayDate($data['user_birthdate'], 'day') : t('unknown');
 		$link = GWF_HTML::anchor(url('Account', 'ChangeDemo', sprintf("&userid=%d&token=%s", $user->getID(), $ac->getToken())));
 
 		$args = [$username, $sitename, $timeout, $country, $language, $gender, $birthdate, $link];

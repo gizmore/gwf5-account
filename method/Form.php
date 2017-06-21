@@ -39,7 +39,7 @@ final class Account_Form extends GWF_MethodForm
 		$form->addField(GDO_Divider::make('div2')->label('section_email'));
 		$form->addField($user->gdoColumn('user_email')->writable($m->cfgAllowEmailChange()));
 		$form->addField($user->gdoColumn('user_email_fmt')->writable($m->cfgAllowEmailFormatChange()));
-		if ($m->cfgAllowEmailVisibleChange()) $form->addField($user->gdoColumn('user_allow_email'));
+// 		if ($m->cfgAllowEmailVisibleChange()) $form->addField($user->gdoColumn('user_allow_email'));
 		
 		$form->addField(GDO_Divider::make('div3')->label('section_demographic'));
 		$form->addField($user->gdoColumn('user_language')->writable($m->cfgAllowLanguageChange()));
@@ -48,9 +48,9 @@ final class Account_Form extends GWF_MethodForm
 		if ($m->cfgAllowBirthdayChange()) $form->addField($user->gdoColumn('user_birthdate'));
 
 		$form->addField(GDO_Divider::make('div4')->label('section_options'));
-		if ($m->cfgAllowOnlineVisibleChange()) $form->addField($user->gdoColumn('user_hide_online'));
-		if ($m->cfgAllowAdultOptionsChange()) $form->addField($user->gdoColumn('user_want_adult'));
-		if ($m->cfgAllowBirthdayOptionsChange()) $form->addField($user->gdoColumn('user_show_birthdays'));
+// 		if ($m->cfgAllowOnlineVisibleChange()) $form->addField($user->gdoColumn('user_hide_online'));
+// 		if ($m->cfgAllowAdultOptionsChange()) $form->addField($user->gdoColumn('user_want_adult'));
+// 		if ($m->cfgAllowBirthdayOptionsChange()) $form->addField($user->gdoColumn('user_show_birthdays'));
 		
 		$form->addField(GDO_Submit::make());
 		$form->addField(GDO_AntiCSRF::make());
@@ -69,27 +69,27 @@ final class Account_Form extends GWF_MethodForm
 		$user = GWF_User::current();
 		$guest = $user->isGuest();
 		
-		if ($m->cfgAllowAdultOptionsChange() && $user->getAge() >= $m->cfgAdultAge())
-		{
-			$back .= $this->changeFlag($form, $user, 'user_want_adult');
-		}
-		else
-		{
-			$form->getField('user_want_adult')->value('0');
-		}
+// 		if ($m->cfgAllowAdultOptionsChange() && $user->getAge() >= $m->cfgAdultAge())
+// 		{
+// 			$back .= $this->changeFlag($form, $user, 'user_want_adult');
+// 		}
+// 		else
+// 		{
+// 			$form->getField('user_want_adult')->value('0');
+// 		}
 		
-		if ($m->cfgAllowOnlineVisibleChange())
-		{
-			$back .= $this->changeFlag($form, $user, 'user_hide_online');
-		}
-		if ($m->cfgAllowBirthdayOptionsChange())
-		{
-			$back .= $this->changeFlag($form, $user, 'user_show_birthdays');
-		}
-		if ( (!$guest) && ($m->cfgAllowEmailVisibleChange()) )
-		{
-			$back .= $this->changeFlag($form, $user, 'user_allow_email');
-		}
+// 		if ($m->cfgAllowOnlineVisibleChange())
+// 		{
+// 			$back .= $this->changeFlag($form, $user, 'user_hide_online');
+// 		}
+// 		if ($m->cfgAllowBirthdayOptionsChange())
+// 		{
+// 			$back .= $this->changeFlag($form, $user, 'user_show_birthdays');
+// 		}
+// 		if ( (!$guest) && ($m->cfgAllowEmailVisibleChange()) )
+// 		{
+// 			$back .= $this->changeFlag($form, $user, 'user_allow_email');
+// 		}
 		
 		# Real Name
 		if ( (!$guest) && ($m->cfgAllowRealName()) )
@@ -170,19 +170,20 @@ final class Account_Form extends GWF_MethodForm
 		if ($back)
 		{
 			$user->save();
+			return GWF_Message::make($back)->add($this->renderPage());
 		}
 		
-		return $back ? GWF_Message::make($back)->add($this->renderPage()) : $this->renderPage();
+		return $this->renderPage();
 	}
 	
-	private function changeFlag(GWF_Form $form, GWF_User $user, $flagname)
-	{
-		$newFlag = $form->getVar($flagname);
-		if ($newFlag !== $user->getVar($flagname))
-		{
-			$user->setVar($flagname, $newFlag);
-			return t('msg_'.$flagname.($newFlag?'_on':'_off'));
-		}
-	}
+// 	private function changeFlag(GWF_Form $form, GWF_User $user, $flagname)
+// 	{
+// 		$newFlag = $form->getVar($flagname);
+// 		if ($newFlag !== $user->getVar($flagname))
+// 		{
+// 			$user->setVar($flagname, $newFlag);
+// 			return t('msg_'.$flagname.($newFlag?'_on':'_off'));
+// 		}
+// 	}
 	
 }

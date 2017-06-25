@@ -43,7 +43,7 @@ final class Account_Form extends GWF_MethodForm
 		
 		$form->addField(GDO_Divider::make('div3')->label('section_demographic'));
 		$form->addField($user->gdoColumn('user_language')->writable($m->cfgAllowLanguageChange()));
-		$form->addField($user->gdoColumn('user_country')->writable($m->cfgAllowCountryChange()));
+		$form->addField($user->gdoColumn('user_country')->withCompletion()->writable($m->cfgAllowCountryChange()));
 		if ($m->cfgAllowGenderChange()) $form->addField($user->gdoColumn('user_gender'));
 		if ($m->cfgAllowBirthdayChange()) $form->addField($user->gdoColumn('user_birthdate'));
 

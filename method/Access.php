@@ -5,8 +5,6 @@
  */
 final class Account_Access extends GWF_MethodQueryTable
 {
-	public function getGDO() { return GWF_AccountAccess::table(); }
-
 	public function getUserType() { return GWF_User::MEMBER; }
 	
 	public function isEnabled() { return Module_Account::instance()->cfgFeatureAccess(); }
@@ -18,7 +16,7 @@ final class Account_Access extends GWF_MethodQueryTable
 	
 	public function getQuery()
 	{
-		return parent::getQuery()->where('accacc_uid='.GWF_User::current()->getID());
+		return GWF_AccountAccess::table()->select('*')->where('accacc_uid='.GWF_User::current()->getID());
 	}
 	
 	public function getHeaders()

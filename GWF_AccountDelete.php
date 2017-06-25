@@ -13,7 +13,7 @@ final class GWF_AccountDelete extends GDO
 	public function gdoColumns()
 	{
 		return array(
-			GDO_User::make('accrm_uid')->primary()->cascadeNull(),
+			GDO_Username::make('accrm_username')->primary(),
 			GDO_Message::make('accrm_note')->notNull(),
 		);
 	}
@@ -23,6 +23,6 @@ final class GWF_AccountDelete extends GDO
 	##############
 	public static function insertNote(GWF_User $user, string $note)
 	{
-		return self::blank(['accrm_uid' => $user->getID(), 'accrm_note' => $note])->insert();
+		return self::blank(['accrm_username' => $user->getName(), 'accrm_note' => $note])->insert();
 	}
 }

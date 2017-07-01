@@ -1,7 +1,7 @@
 <?php
 return array(
 'btn_account' => 'Account',
-'link_account_form' => 'Profile',
+'link_account_form' => 'Account',
 'link_account_encryption' => 'GPG',
 'link_account_security' => 'Security',
 'link_account_access' => 'Logs',

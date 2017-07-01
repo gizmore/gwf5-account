@@ -35,10 +35,11 @@ final class Account_Settings extends GWF_MethodForm
 		$navbar = GWF_Navbar::create();
 		foreach (GWF5::instance()->getActiveModules() as $module)
 		{
-			if ($settings = $module->getUserSettings())
+			if ($settings = $module->getWritableUserSettings())
 			{
-				$href = href('Account', 'Settings', '&module='.$module->getName());
-				$button = GDO_Link::make()->rawlabel($module->getName())->href($href);
+				$name = $module->getName();
+				$href = href('Account', 'Settings', "&module=$name");
+				$button = GDO_Link::make("link_$name")->rawlabel($name)->href($href)->icon('settings');
 				$navbar->addField($button);
 			}
 		}
@@ -50,8 +51,11 @@ final class Account_Settings extends GWF_MethodForm
 		$this->title('ft_account_settings', [$this->getSiteName(), $this->configModule->getName()]);
 		foreach ($this->configModule->getUserSettings() as $gdoType)
 		{
-			$value = GWF_UserSetting::get($gdoType->name)->getValue();
-			$form->addField($gdoType->value($value));
+// 			if ($gdoType->writable)
+			{
+				$value = GWF_UserSetting::get($gdoType->name)->getValue();
+				$form->addField($gdoType->value($value));
+			}
 		}
 		$form->addField(GDO_AntiCSRF::make());
 		$form->addField(GDO_Submit::make());
@@ -62,13 +66,18 @@ final class Account_Settings extends GWF_MethodForm
 		$info = [];
 		foreach ($this->configModule->getUserSettings() as $gdoType)
 		{
-			$key = $gdoType->name;
-			$old = GWF_UserSetting::get($key)->getValue();
-			$new = $form->getVar($key);
-			if ($old !== $new)
+			if ($gdoType->writable)
 			{
-				GWF_UserSetting::set($key, $new);
-				$info[] = t('msg_modulevar_changed', [$gdoType->displayLabel(), GWF_HTML::escape($old), GWF_HTML::escape($new)]);
+				$key = $gdoType->name;
+				$old = GWF_UserSetting::get($key)->getValue();
+				$new = $form->getVar($key);
+				if ($old !== $new)
+				{
+					GWF_UserSetting::set($key, $new);
+					$old = $old === null ? '<i class="null">null</i>' : GWF_HTML::escape($old);
+					$new = $new === null ? '<i class="null">null</i>' : GWF_HTML::escape($new);
+					$info[] = t('msg_modulevar_changed', [$gdoType->displayLabel(), $old, $new]);
+				}
 			}
 		}
 		return $this->message('msg_settings_saved', [$this->configModule->getName(), implode('<br/>', $info)])->add($this->renderPage());

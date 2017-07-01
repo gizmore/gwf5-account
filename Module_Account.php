@@ -49,7 +49,10 @@ final class Module_Account extends GWF_Module
 	public function hookUserAuthenticated(array $args=null)
 	{
 // 		$this->initModule();
-		GWF_AccountAccess::onAccess($this, $args[0]);
+		if (!GWF5::instance()->isCLI())
+		{
+			GWF_AccountAccess::onAccess($this, $args[0]);
+		}
 	}
 
 	##################
@@ -84,19 +87,18 @@ final class Module_Account extends GWF_Module
 	 */
 	public function onRenderFor(GWF_Navbar $navbar)
 	{
-		if ($navbar->isRight())
-		{
-			$user = GWF_User::current();
-			if ( ($user->isMember()) || ($user->isGuest() && $this->cfgAllowGuests()) )
-			{
-				$navbar->addField(GDO_Link::make('btn_account')->href($this->getMethodHREF('Form')));
-			}
-		}
+		$this->templatePHP('navbar.php', ['navbar' => $navbar]);
 	}
 	
+	
+	public function renderAdminTabs()
+	{
+		return $this->templatePHP('admin_tabs.php');
+	}
+
 	public function renderAccountTabs()
 	{
 		return $this->templatePHP('overview.php');
 	}
-
+	
 }

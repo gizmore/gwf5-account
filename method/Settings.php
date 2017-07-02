@@ -49,15 +49,21 @@ final class Account_Settings extends GWF_MethodForm
 	public function createForm(GWF_Form $form)
 	{
 		$this->title('ft_account_settings', [$this->getSiteName(), $this->configModule->getName()]);
-		foreach ($this->configModule->getUserConfig() as $gdoType)
+		if ($settings = $this->configModule->getUserConfig())
 		{
-			$value = GWF_UserSetting::get($gdoType->writable(false)->name)->getValue();
-			$form->addField($gdoType->value($value));
+			foreach ($settings as $gdoType)
+			{
+				$value = GWF_UserSetting::get($gdoType->writable(false)->name)->getValue();
+				$form->addField($gdoType->value($value));
+			}
 		}
-		foreach ($this->configModule->getUserSettings() as $gdoType)
+		if ($settings = $this->configModule->getUserSettings())
 		{
-			$value = GWF_UserSetting::get($gdoType->name)->getValue();
-			$form->addField($gdoType->value($value));
+			foreach ($settings as $gdoType)
+			{
+				$value = GWF_UserSetting::get($gdoType->name)->getValue();
+				$form->addField($gdoType->value($value));
+			}
 		}
 		$form->addField(GDO_AntiCSRF::make());
 		$form->addField(GDO_Submit::make());

@@ -7,7 +7,7 @@
  */
 final class Account_ChangeDemo extends GWF_Method
 {
-	public function isTransactional() { return true; }
+	public function isAlwaysTransactional() { return true; }
 	
 	public function execute()
 	{

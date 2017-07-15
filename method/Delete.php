@@ -47,7 +47,7 @@ final class Account_Delete extends GWF_MethodForm
 		
 		# Mark deleted
 		$user->saveValue('user_deleted_at', time());
-		GWF_Hook::call('UserQuit', [$user]);
+		GWF_Hook::call('UserQuit', $user);
 		
 		if ($this->prune)
 		{

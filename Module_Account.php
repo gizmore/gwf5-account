@@ -46,12 +46,11 @@ final class Module_Account extends GWF_Module
 	#############
 	### Hooks ###
 	#############
-	public function hookUserAuthenticated(array $args=null)
+	public function hookUserAuthenticated(GWF_User $user)
 	{
-// 		$this->initModule();
 		if (!GWF5::instance()->isCLI())
 		{
-			GWF_AccountAccess::onAccess($this, $args[0]);
+			GWF_AccountAccess::onAccess($this, $user);
 		}
 	}
 

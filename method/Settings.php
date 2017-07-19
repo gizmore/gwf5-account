@@ -35,7 +35,7 @@ final class Account_Settings extends GWF_MethodForm
 		$navbar = GWF_Navbar::create();
 		foreach (GWF5::instance()->getActiveModules() as $module)
 		{
-			if ($settings = $module->getUserSettings())
+			if ($module->getUserSettings() || $module->getUserConfig())
 			{
 				$name = $module->getName();
 				$href = href('Account', 'Settings', "&module=$name");
@@ -48,20 +48,23 @@ final class Account_Settings extends GWF_MethodForm
 	
 	public function createForm(GWF_Form $form)
 	{
-		$this->title('ft_account_settings', [$this->getSiteName(), $this->configModule->getName()]);
+	    $moduleName = $this->configModule->getName();
+		$this->title('ft_account_settings', [$this->getSiteName(), $moduleName]);
+		if ($settings = $this->configModule->getUserSettings())
+		{
+		    $form->addField(GDO_Divider::make()->label('div_user_settings', [$moduleName]));
+		    foreach ($settings as $gdoType)
+		    {
+		        $value = GWF_UserSetting::get($gdoType->name)->getValue();
+		        $form->addField($gdoType->value($value));
+		    }
+		}
 		if ($settings = $this->configModule->getUserConfig())
 		{
+		    $form->addField(GDO_Divider::make()->label('div_variables', [$moduleName]));
 			foreach ($settings as $gdoType)
 			{
 				$value = GWF_UserSetting::get($gdoType->writable(false)->name)->getValue();
-				$form->addField($gdoType->value($value));
-			}
-		}
-		if ($settings = $this->configModule->getUserSettings())
-		{
-			foreach ($settings as $gdoType)
-			{
-				$value = GWF_UserSetting::get($gdoType->name)->getValue();
 				$form->addField($gdoType->value($value));
 			}
 		}

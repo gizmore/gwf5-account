@@ -8,6 +8,8 @@ return array(
 'link_account_delete' => 'Delete',
 ##########################################################
 'ft_account_settings' => '[%s] %s Settings',
+'div_user_settings' => 'Personal %s settings',
+'div_variables' => 'Your %s variables', 
 'msg_settings_saved' => 'Your settings for the %s module have been saved.<br/>%s',
 ##########################################################
 'ft_account_form' => '[%s] Account',

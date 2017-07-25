@@ -7,6 +7,7 @@ return array(
 'link_account_access' => 'Logs',
 'link_account_delete' => 'Delete',
 ##########################################################
+'box_content_account_settings' => 'Here you find settings for all enabled modules with configuration variables.<br/>Note that we distingush variables which are just informative for you, and settings which you can toggle.',
 'ft_account_settings' => '[%s] %s Settings',
 'div_user_settings' => 'Personal %s settings',
 'div_variables' => 'Your %s variables', 
